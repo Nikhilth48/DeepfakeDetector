@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Detection System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+    <div class="p-6">
+        <div class="max-w-5xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white mb-2">🎥 Deepfake Detection System</h1>
+                <p class="text-purple-200">Advanced AI-powered media authentication</p>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="bg-blue-900/30 border border-blue-500/30 rounded-lg p-4 mb-6">
+                <div class="flex gap-3">
+                    <span class="text-blue-400 text-xl">ℹ️</span>
+                    <div class="text-sm text-blue-100">
+                        <p class="font-semibold mb-1">How it works:</p>
+                        <p>This system uses multiple AI detection techniques including facial inconsistency analysis, temporal coherence checking, artifact detection, and biometric pattern analysis to identify synthetic or manipulated media.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Upload Section -->
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                    <h2 class="text-xl font-semibold text-white mb-4">📤 Upload Media</h2>
+                    
+                    <div class="space-y-4">
+                        <div onclick="document.getElementById('fileInput').click()" 
+                             class="border-2 border-dashed border-purple-400/50 rounded-lg p-8 text-center cursor-pointer hover:border-purple-400 transition-colors bg-white/5">
+                            <div class="text-6xl mb-3">🎬</div>
+                            <p class="text-white mb-2">Click to upload image or video</p>
+                            <p class="text-sm text-purple-200">Supports JPG, PNG, MP4, AVI</p>
+                            <input id="fileInput" type="file" accept="image/*,video/*" class="hidden" onchange="handleFileSelect(event)">
+                        </div>
+
+                        <div id="previewContainer" class="hidden relative rounded-lg overflow-hidden bg-black">
+                            <img id="imagePreview" class="w-full h-64 object-contain hidden" />
+                            <video id="videoPreview" controls class="w-full h-64 hidden"></video>
+                        </div>
+
+                        <div id="buttonContainer" class="hidden flex gap-3">
+                            <button onclick="analyzeMedia()" id="analyzeBtn"
+                                class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                                Analyze Media
+                            </button>
+                            <button onclick="resetAll()"
+                                class="px-6 bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-lg font-semibold transition-colors">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                    <h2 class="text-xl font-semibold text-white mb-4">📊 Analysis Results</h2>
+                    
+                    <div id="idleState" class="text-center py-12 text-purple-200">
+                        <div class="text-6xl mb-4 opacity-50">📷</div>
+                        <p>Upload and analyze media to see results</p>
+                    </div>
+
+                    <div id="analyzingState" class="hidden text-center py-12">
+                        <div class="inline-block animate-spin rounded-full h-16 w-16 border-4 border-purple-400 border-t-transparent mb-4"></div>
+                        <p class="text-white font-semibold">Analyzing media...</p>
+                        <p class="text-sm text-purple-200 mt-2">Running detection algorithms</p>
+                    </div>
+
+                    <div id="resultState" class="hidden space-y-4">
+                        <!-- Result will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-8 text-center text-purple-200 text-sm">
+                <p>⚠️ Note: This is a demonstration. Real deepfake detection requires sophisticated ML models trained on large datasets.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFile = null;
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            currentFile = file;
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const previewContainer = document.getElementById('previewContainer');
+                const imagePreview = document.getElementById('imagePreview');
+                const videoPreview = document.getElementById('videoPreview');
+                
+                previewContainer.classList.remove('hidden');
+                
+                if (file.type.startsWith('image/')) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                    videoPreview.classList.add('hidden');
+                } else {
+                    videoPreview.src = e.target.result;
+                    videoPreview.classList.remove('hidden');
+                    imagePreview.classList.add('hidden');
+                }
+                
+                document.getElementById('buttonContainer').classList.remove('hidden');
+                document.getElementById('resultState').classList.add('hidden');
+                document.getElementById('idleState').classList.add('hidden');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        async function analyzeMedia() {
+            if (!currentFile) return;
+
+            // Show analyzing state
+            document.getElementById('idleState').classList.add('hidden');
+            document.getElementById('resultState').classList.add('hidden');
+            document.getElementById('analyzingState').classList.remove('hidden');
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('analyzeBtn').textContent = 'Analyzing...';
+
+            // Simulate analysis
+            await new Promise(resolve => setTimeout(resolve, 2500));
+
+            // Generate random results
+            const techniques = [
+                { name: 'Facial Inconsistency Analysis', score: Math.random() * 100 },
+                { name: 'Temporal Coherence Check', score: Math.random() * 100 },
+                { name: 'Artifact Detection', score: Math.random() * 100 },
+                { name: 'Eye Blinking Pattern', score: Math.random() * 100 },
+                { name: 'Audio-Visual Sync', score: Math.random() * 100 }
+            ];
+
+            const avgScore = techniques.reduce((sum, t) => sum + t.score, 0) / techniques.length;
+            const isDeepfake = avgScore > 60;
+
+            // Display results
+            displayResults(isDeepfake, avgScore, techniques);
+
+            // Reset button state
+            document.getElementById('analyzeBtn').disabled = false;
+            document.getElementById('analyzeBtn').textContent = 'Analyze Media';
+        }
+
+        function displayResults(isDeepfake, confidence, techniques) {
+            const resultState = document.getElementById('resultState');
+            document.getElementById('analyzingState').classList.add('hidden');
+            resultState.classList.remove('hidden');
+
+            const details = isDeepfake 
+                ? 'Multiple manipulation indicators detected. This media shows signs of synthetic generation or manipulation.'
+                : 'No significant manipulation detected. The media appears to be authentic based on our analysis.';
+
+            const bgColor = isDeepfake ? 'bg-red-900/30 border-red-500' : 'bg-green-900/30 border-green-500';
+            const icon = isDeepfake ? '⚠️' : '✅';
+            const title = isDeepfake ? 'Deepfake Detected' : 'Authentic Media';
+
+            let techniquesHtml = techniques.map(t => {
+                const score = t.score.toFixed(1);
+                const barColor = score > 60 ? 'bg-red-500' : 'bg-green-500';
+                return `
+                    <div class="bg-white/5 rounded-lg p-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-white">${t.name}</span>
+                            <span class="text-sm font-semibold text-purple-300">${score}%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 rounded-full h-2">
+                            <div class="h-2 rounded-full transition-all ${barColor}" style="width: ${score}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            resultState.innerHTML = `
+                <div class="p-4 rounded-lg border-2 ${bgColor}">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-4xl">${icon}</span>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">${title}</h3>
+                            <p class="text-sm text-white/80">Confidence: ${confidence.toFixed(1)}%</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-white/90 mt-2">${details}</p>
+                </div>
+                <div class="space-y-3">
+                    <h4 class="text-white font-semibold">Detection Techniques:</h4>
+                    ${techniquesHtml}
+                </div>
+            `;
+        }
+
+        function resetAll() {
+            currentFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('previewContainer').classList.add('hidden');
+            document.getElementById('buttonContainer').classList.add('hidden');
+            document.getElementById('resultState').classList.add('hidden');
+            document.getElementById('analyzingState').classList.add('hidden');
+            document.getElementById('idleState').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
